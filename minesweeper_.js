@@ -21,6 +21,8 @@ export const createBoard = (size) => {
 export const createTile = (x,y) => {
     const newTile = document.createElement('div');
     newTile.dataset.status = TILE_STATUSES.HIDDEN;
+    newTile.dataset.x = x;
+    newTile.dataset.y = y;
 
     return {
         x,
@@ -33,4 +35,16 @@ export const createTile = (x,y) => {
             this.element.dataset.status = value;
         }
     }
+}
+
+export const findTileByCoordinates = (board, element) => {
+    return board[element.dataset.x][element.dataset.y];
+}
+
+export const markTile = (tile) => {
+    if (tile.status === TILE_STATUSES.NUMBER || tile.status === TILE_STATUSES.MINE) {
+        return;
+    }
+
+    tile.status = tile.status === TILE_STATUSES.MARKED ? TILE_STATUSES.HIDDEN : TILE_STATUSES.MARKED;
 }
