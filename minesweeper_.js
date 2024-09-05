@@ -5,12 +5,14 @@ export const TILE_STATUSES = {
     MARKED: "marked",
 }
 
-export const createBoard = (size) => {
+export const createBoard = (size, numberOfMines) => {
     const board = [];
+    const mineCoordinates = getMinesPositions(size,numberOfMines);
     for(let x = 0; x < size; x++) {
         const row = [];
         for(let y=0; y < size; y++) {
-            row.push(createTile(x,y));
+            const mine = mineCoordinates.some(checkPosition.bind(null,{x,y}))
+            row.push(createTile(x,y,mine));
         }
         board.push(row);
     }
@@ -18,7 +20,7 @@ export const createBoard = (size) => {
     return board;
 }
 
-export const createTile = (x,y) => {
+export const createTile = (x,y,mine) => {
     const newTile = document.createElement('div');
     newTile.dataset.status = TILE_STATUSES.HIDDEN;
     newTile.dataset.x = x;
@@ -28,6 +30,7 @@ export const createTile = (x,y) => {
         x,
         y,
         element: newTile,
+        mine: mine,
         get status() {
             return this.element.dataset.status;
         },
@@ -47,4 +50,36 @@ export const markTile = (tile) => {
     }
 
     tile.status = tile.status === TILE_STATUSES.MARKED ? TILE_STATUSES.HIDDEN : TILE_STATUSES.MARKED;
+}
+
+const getMinesPositions = (size, numberOfMines) => {
+    const minePositions = [];
+    for (let i = 0; i < numberOfMines; i++) {
+        minePositions.push(
+            {
+                x: getRandomInt(numberOfMines),
+                y: getRandomInt(numberOfMines),
+            }
+        )
+    }
+
+    return minePositions;
+}
+
+const getRandomInt = (max) => {
+    return Math.floor(Math.random() * max);
+}
+
+const checkPosition = (a,b) => {
+    return a.x === b.x && a.y === b.y;
+}
+
+export const countMinesLeft = (board, numberOfMines) => {
+    let markedCounter = 0;
+
+    board.flat().forEach((item) => {
+        markedCounter += item.status === TILE_STATUSES.MARKED ? 1 : 0;
+    })
+
+    return numberOfMines - markedCounter;
 }
