@@ -1,19 +1,19 @@
 import {
-    TILE_STATUSES,
     findTileByCoordinates,
     createBoard,
     markTile,
     countMinesLeft,
-    revealBombs,
     checkGameEnd,
+    revealTile,
 } from "./minesweeper_.js";
 
 const BOARD_SIZE = 10;
 const NUMBER_OF_MINES = 10;
 
-const board = createBoard(BOARD_SIZE,NUMBER_OF_MINES);
+let board = createBoard(BOARD_SIZE,NUMBER_OF_MINES);
 const boardContainer = document.querySelector('.board');
 boardContainer.style.setProperty('--size',`${BOARD_SIZE}`);
+const refreshButton = document.querySelector('.refresh-icon');
 
 const mineCounter = document.querySelector('.mine-counter');
 const updateMinesCounter = () => {
@@ -30,19 +30,27 @@ const setupBoard = () => {
     })
 }
 
+const stopEventPropagation = (e) => {
+    e.stopImmediatePropagation();
+}
+
 const removeListeners = () => {
-    boardContainer.removeEventListener("click",handleLeftClick);
-    boardContainer.removeEventListener("contextmenu",handleRightClick);
+    boardContainer.addEventListener("click", stopEventPropagation, { capture: true })
+    boardContainer.addEventListener("contextmenu", stopEventPropagation, { capture: true })
 }
 
 const handleRightClick = (tile) => {
     markTile(tile);
-    updateMinesCounter()
+    updateMinesCounter();
+    if (checkGameEnd(board,tile)) {
+        removeListeners();
+    }
 }
 
 const handleLeftClick = (tile) => {
+    revealTile(board,tile);
     if (checkGameEnd(board,tile)) {
-
+        removeListeners();
     }
 }
 
@@ -60,10 +68,25 @@ const setupBoardEventListeners = () => {
             handleLeftClick(findTileByCoordinates(board,e.target));
         }
     });
+
+    refreshButton.addEventListener('click', () => {
+        refreshGame();
+    })
+}
+const setupGame = () => {
+    setupBoard();
+    setupBoardEventListeners();
 }
 
+const removeBoard = () => {
+    document.querySelectorAll('.board > *').forEach(el => el.remove());
+}
+const refreshGame = () => {
+    removeBoard();
+    boardContainer.removeEventListener("click", stopEventPropagation)
+    boardContainer.removeEventListener("contextmenu", stopEventPropagation)
+    board = createBoard(BOARD_SIZE,NUMBER_OF_MINES);
+    setupGame();
+}
 
-
-setupBoard();
-setupBoardEventListeners();
-
+setupGame();

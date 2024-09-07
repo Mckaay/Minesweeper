@@ -54,3 +54,30 @@ body {
 .board > [data-status="marked"] {
     background-color: yellow;
 }
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    font-style: italic;
+    background-repeat: no-repeat;
+    background-size: cover;
+    shape-margin: 1rem;
+}
+
+.refresh-icon {
+    height: 40px;
+    width: 40px;
+}
+
+.refresh-icon:hover {
+    cursor: pointer;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+}
