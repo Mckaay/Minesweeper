@@ -40,6 +40,7 @@ const removeListeners = () => {
 }
 
 const handleRightClick = (tile) => {
+    console.log('Hi');
     markTile(tile);
     updateMinesCounter();
     if (checkGameEnd(board,tile)) {
@@ -69,9 +70,7 @@ const setupBoardEventListeners = () => {
         }
     });
 
-    refreshButton.addEventListener('click', () => {
-        refreshGame();
-    })
+    refreshButton.addEventListener('click', refreshGame);
 }
 const setupGame = () => {
     setupBoard();
@@ -79,14 +78,16 @@ const setupGame = () => {
 }
 
 const removeBoard = () => {
-    document.querySelectorAll('.board > *').forEach(el => el.remove());
+    boardContainer.innerHTML = '';
 }
 const refreshGame = () => {
     removeBoard();
-    boardContainer.removeEventListener("click", stopEventPropagation)
-    boardContainer.removeEventListener("contextmenu", stopEventPropagation)
+    boardContainer.removeEventListener("click", stopEventPropagation,{ capture: true });
+    boardContainer.removeEventListener("contextmenu", stopEventPropagation,{ capture: true });
     board = createBoard(BOARD_SIZE,NUMBER_OF_MINES);
     setupGame();
 }
+
+
 
 setupGame();
