@@ -70,16 +70,34 @@ const getRandomInt = (max) => {
     return Math.floor(Math.random() * max);
 }
 
-const checkPosition = (a,b) => {
-    return a.x === b.x && a.y === b.y;
-}
+const checkPosition = (a, b) => a.x === b.x && a.y === b.y;
 
 export const countMinesLeft = (board, numberOfMines) => {
-    let markedCounter = 0;
+    const markedTiles = board.flat().filter(tile => tile.status === TILE_STATUSES.MARKED);
+    return numberOfMines - markedTiles.length;
+};
 
-    board.flat().forEach((item) => {
-        markedCounter += item.status === TILE_STATUSES.MARKED ? 1 : 0;
-    })
+export const revealBombs = (board) => {
+    board.flat().forEach(tile => {
+        if (tile.mine) tile.status = TILE_STATUSES.MINE;
+    });
+};
 
-    return numberOfMines - markedCounter;
+export const checkGameEnd = (board, tile) => {
+    if (tile.mine) {
+        revealBombs(board);
+        return true;
+    }
+    return checkWin(board);
+};
+
+const checkWin = (board) => {
+    return board.flat().every(tile =>
+        (tile.mine && tile.status === TILE_STATUSES.MARKED) ||
+        (!tile.mine && tile.status !== TILE_STATUSES.HIDDEN)
+    );
 }
+
+
+
+

@@ -4,6 +4,8 @@ import {
     createBoard,
     markTile,
     countMinesLeft,
+    revealBombs,
+    checkGameEnd,
 } from "./minesweeper_.js";
 
 const BOARD_SIZE = 10;
@@ -28,9 +30,20 @@ const setupBoard = () => {
     })
 }
 
+const removeListeners = () => {
+    boardContainer.removeEventListener("click",handleLeftClick);
+    boardContainer.removeEventListener("contextmenu",handleRightClick);
+}
+
 const handleRightClick = (tile) => {
     markTile(tile);
     updateMinesCounter()
+}
+
+const handleLeftClick = (tile) => {
+    if (checkGameEnd(board,tile)) {
+
+    }
 }
 
 const setupBoardEventListeners = () => {
@@ -44,11 +57,12 @@ const setupBoardEventListeners = () => {
 
     boardContainer.addEventListener('click', (e) => {
         if (e.target.matches('.board > *')) {
-            const tile = findTileByCoordinates(board,e.target);
-            console.log(tile);
+            handleLeftClick(findTileByCoordinates(board,e.target));
         }
     });
 }
+
+
 
 setupBoard();
 setupBoardEventListeners();
